@@ -1,43 +1,42 @@
-import pandas as pd
 from google.cloud import bigquery
-from google.oauth2 import service_account
+import os
 
 
 def write_to_big_query():
-    credentials = service_account.Credentials.from_service_account_file(
-    'credentials/big_query_credentials.json')
-
+    os.environ[
+        "GOOGLE_APPLICATION_CREDENTIALS"] = 'C:/Users/ashen/Documents/kaliso/twitter_analyse/credentials' \
+                                            '/big_query_credentials.json '
+    os.environ["PROJECT_ID"] = "norse-ward-291509"
+    PROJECT_ID = 'norse-ward-291509'
+    filename = 'temp_data/pizza_tweets.csv'
     dataset_id = 'tweets'
+    table_id = 'pizza'
     client = bigquery.Client()
 
-    # TODO(developer): Set dataset_id to the ID of the dataset to create.
-    # dataset_id = "{}.your_dataset".format(client.project)
+    # dataset = client.create_dataset('tweets')
+    # client.create_table('{}.{}.{}'.format(PROJECT_ID, dataset_id, table_id))
 
-    # Construct a full Dataset object to send to the API.
-    dataset = bigquery.Dataset(dataset_id)
+    dataset_ref = client.dataset(dataset_id)
+    table_ref = dataset_ref.table(table_id)
+    job_config = bigquery.LoadJobConfig()
+    job_config.allow_quoted_newlines = True
+    job_config.source_format = bigquery.SourceFormat.CSV
+    job_config.autodetect = True
 
-    dataset = client.create_dataset(dataset, timeout=30)  # Make an API request.
-    print("Created dataset {}.{}".format(client.project, dataset.dataset_id))
+    with open(filename, "rb") as source_file:
+        job = client.load_table_from_file(source_file, table_ref, job_config=job_config)
 
-    df = pd.read_excel(
-        'temp_data/pizza_tweets.xlsx'
-        )
+    job.result()
 
-    # df.columns = [u'Underlying_Script_Code', u'Script_Name', u'ISIN_No', u'Remarks']
+    print("Loaded {} rows into {}:{}.".format(job.output_rows, dataset_id, table_id))
 
-    table_id = 'dataset.pizza'
-    # job_config = bigquery.LoadJobConfig(
-    #     WRITE_TRUNCATE='WRITE_TRUNCATE')
-    # job = client.load_table_from_dataframe(
-    #     df,
-    #     table_id,
-    #     job_config=job_config
-    #     )
-
-    job = client.load_table_from_dataframe(
-        df,
-        table_id
-        )
 
 if __name__ == '__main__':
     write_to_big_query()
+
+# table = client.get_table(table_id)  # Make an API request.
+# print(
+#     "Loaded {} rows and {} columns to {}".format(
+#         table.num_rows, len(table.schema), table_id
+#     )
+# )

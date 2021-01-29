@@ -1,10 +1,6 @@
 import os
-
 import requests
 import pandas as pd
-
-from google.cloud import bigquery
-from google.oauth2 import service_account
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -33,25 +29,14 @@ def write_to_excel(response, query):
     # print(df.columns)
     return df
 
-def write_to_big_query():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'C:/Users/ashen/Documents/kaliso/twitter-api-to-bigquery/credentials/big_query_credentials.json'
-    credentials = service_account.Credentials.from_service_account_file('C:/Users/ashen/Documents/kaliso/twitter-api-to-bigquery/credentials/big_query_credentials.json')
-    os.environ["PROJECT_ID"] = "test-project-1602512578661"
-    df = pd.read_excel(
-        'temp_data/pizza_tweets.xlsx'
-        )
-
-    dataset_id = 'tweets'
-    client = bigquery.Client()
-
-    dataset = bigquery.Dataset(dataset_id)
-
-    dataset = client.create_dataset(dataset, timeout=30)  # Make an API request.
-    print("Created dataset {}.{}".format(client.project, dataset.dataset_id))
-
+def write_to_csv(response, query):
+    tweets = response["data"]
+    df = pd.DataFrame(tweets)
+    df.to_csv('./temp_data/{}_tweets.csv'.format(query), index=False)
+    # print(df.columns)
+    return df
 
 if __name__ == '__main__':
-    # query = "pizza"
-    # response = search_twitter(query=query)
-    # write_to_excel(response=response, query=query)
-    write_to_big_query()
+    query = "pizza"
+    response = search_twitter(query=query)
+    write_to_csv(response=response, query=query)
