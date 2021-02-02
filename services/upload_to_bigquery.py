@@ -1,17 +1,20 @@
 from google.cloud import bigquery
+from app import get_base_path
 import os
+
 
 class WriteToBigQuery:
     def __init__(self):
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'C:/Users/ashen/Documents/kaliso/twitter_analyse/credentials/big_query_credentials.json '
-        os.environ["PROJECT_ID"] = "norse-ward-291509"
+        # os.environ[
+        #     "GOOGLE_APPLICATION_CREDENTIALS"] = '{}/configs/api_keys/big_query_credentials.json'.format(get_base_path())
+        # os.environ["PROJECT_ID"] = "norse-ward-291509"
         self.PROJECT_ID = 'norse-ward-291509'
-        self.path = '../temp_data/pizza_tweets.csv'
+        self.path = '{}/temp_data/pizza_tweets_analysed.csv'.format(get_base_path())
         self.dataset_id = 'tweets'
 
     def write_to_big_query(self):
-        filename=self.path
-        table_id = 'pizza'
+        filename = self.path
+        table_id = 'analytics'
         client = bigquery.Client()
 
         # dataset = client.create_dataset(self.dataset_id)
