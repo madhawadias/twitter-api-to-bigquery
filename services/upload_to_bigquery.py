@@ -18,7 +18,7 @@ class WriteToBigQuery:
         client = bigquery.Client()
 
         # dataset = client.create_dataset(self.dataset_id)
-        # client.create_table('{}.{}.{}'.format(self.PROJECT_ID, self.dataset_id, table_id))
+        client.create_table('{}.{}.{}'.format(self.PROJECT_ID, self.dataset_id, table_id))
 
         dataset_ref = client.dataset(self.dataset_id)
         table_ref = dataset_ref.table(table_id)

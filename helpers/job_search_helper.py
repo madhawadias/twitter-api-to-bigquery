@@ -46,7 +46,7 @@ class JobSearchHelper(object):
             _translated_text = translation.translate_text(row[input_column])
             description.at[index, output_column] = _translated_text
         except Exception as err:
-            pass
+            print(err)
 
     def _get_translation(self, description, input_column, output_column):
         try:
@@ -58,13 +58,12 @@ class JobSearchHelper(object):
         except Exception as e:
             print(e)
 
-    def runner(self, data, input_column,result=[]):
-
+    def runner(self, data, input_column, result=[]):
         try:
             dataframe = data.drop_duplicates()
             dataframe = dataframe.reset_index(drop=True)
             dataframe[self._bio_en_column] = None
-            self._get_translation(dataframe, input_column[0], self._bio_en_column)
+            self._get_translation(dataframe, input_column, self._bio_en_column)
             dataframe[self._bio_en_clean_column] = dataframe[self._bio_en_column].apply(
                 self._preprocessing_nltk_ngrm)
             dataframe = dataframe[dataframe[self._bio_en_clean_column].notnull()]
@@ -75,6 +74,7 @@ class JobSearchHelper(object):
             dataframe = dataframe[dataframe[self._jobs_column].str.len() != 0]
             dataframe = dataframe.reset_index(drop=True)
             dataframe[self._income_column] = None
+            saleries = []
             for i in range(len(dataframe)):
                 try:
                     sal = []
@@ -82,12 +82,16 @@ class JobSearchHelper(object):
                         p = self.job1[self.job1['Titles'] == x]
                         p = p.reset_index(drop=True)
                         sal.append(p['Average salary'][0])
-                    dataframe[self._income_column][i] = sal
+                    # dataframe[self._income_column][i] = sal
+                    saleries.append(sal)
                 except:
                     pass
-            dataframe = dataframe[[input_column[0], self._jobs_column, self._income_column]]
-            data = pd.merge(data, dataframe, on=input_column[0], how='left')
-            result.append(data)
+            dataframe[self._income_column] = saleries
+            dataframe = dataframe[[input_column, self._jobs_column, self._income_column]]
+            data = pd.merge(data, dataframe, on=input_column, how='left')
+            # result.append(data)
+            data = data.dropna(subset=[self._jobs_column])
+            data = data.reset_index(drop=True)
             return data
         except Exception as e:
             print(e)

@@ -3,6 +3,7 @@ from services.upload_to_bigquery import WriteToBigQuery
 from helpers.google_entities_helper import GoogleEntitiesHelper
 from helpers.google_translate_helper import TranslateHelper
 from helpers.sentiment_analysis_global_helper import SentimentAnalysisGlobalHelper
+from helpers.job_search_helper import JobSearchHelper
 from app import get_base_path
 import pandas as pd
 
@@ -12,6 +13,7 @@ class MERGE:
         self._sentiment_analysis_global_helper = SentimentAnalysisGlobalHelper
         self._google_translate_helper = TranslateHelper
         self._google_entities_helper = GoogleEntitiesHelper
+        self._job_search_helper=JobSearchHelper
         self.WriteToBigQuery = WriteToBigQuery
         self.get_base_path=get_base_path
 
@@ -21,17 +23,23 @@ class MERGE:
         translate =self._google_translate_helper()
         sentiment_analysis =self._sentiment_analysis_global_helper()
         extract_entities = self._google_entities_helper()
+        extract_jobs=self._job_search_helper()
 
-        print("getting data from twitter")
-        search.runner(query=query)
-        print("end of the search function")
+        # print("getting data from twitter")
+        # search.runner(query=query)
+        # print("end of the search function")
 
         print("read written file")
         df = pd.read_csv("{}/temp_data/pizza_tweets.csv".format(self.get_base_path()))
         print("created df with {} rows".format(len(df.index)))
         df = df.dropna(subset=['text'])
+        df = df.dropna(subset=['description'])
 
-        # df = df[:5]
+        # df = df[:20]
+        print("extract jobs")
+        df = extract_jobs.runner(data=df, input_column="description")
+        print("extract completed")
+
         print("translating")
         df = translate.runner(df, "text")
         print("translate complete")
