@@ -23,6 +23,7 @@ class SentimentAnalysisGlobal:
             print(err)
 
     def analyze_global_sentiment(self, text_content):
+        # calling the google sentiment analysis api
         """
         Analyzing Sentiment in a String
 
@@ -64,6 +65,7 @@ class SentimentAnalysisGlobal:
             pass
 
     def clean_text(self, message):
+        #  text clean function
         try:
             # remove "http"+link
             message = re.sub(r'http\S+', '', message)

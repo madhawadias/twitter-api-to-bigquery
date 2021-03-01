@@ -20,6 +20,7 @@ class TranslationService(object):
             pass
 
     def get_language(self, text):
+        #  detect language
         try:
             lang = detect(text)
             return lang
@@ -27,6 +28,7 @@ class TranslationService(object):
             pass
 
     def translate_text(self, text):
+        #  calling the google translate api
         try:
             if text is not None:
                 language = self.get_language(text)

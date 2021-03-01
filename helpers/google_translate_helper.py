@@ -16,11 +16,13 @@ class TranslateHelper:
             pass
 
     def get_transaltion_client(self, df, index, input_column, output_column, row):
+        # translate a single tweet
         input_cell = str(row[input_column])
         row[output_column] = self._translation_service.translate_text(input_cell)
         df.at[index, output_column] = row[output_column]
 
     def runner(self, df, input_column, results=[]):
+        # translate tweets one by one
         _output_column = 'translated'
         try:
             df[_output_column] = None

@@ -8,11 +8,13 @@ class GoogleEntitiesHelper:
         self._google_entities = GoogleEntities()
 
     def extract_google_entities_client(self, df, index, input_column, output_column, row):
+        #  extract entities for a single tweet
         input_cell = str(row[input_column])
         _result = self._google_entities.extract_entities(input_cell)
         df.at[index, output_column] = _result
 
     def runner(self, df, input_column, results=[]):
+        #  extract entities for one by one
         _output_column = 'entities'
         try:
             df[_output_column] = None

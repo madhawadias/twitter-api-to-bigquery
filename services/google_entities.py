@@ -29,6 +29,7 @@ class GoogleEntities(object):
             pass
 
     def extract_entities(self, text):
+        #  calling google entity extect api
         type_ = enums.Document.Type.PLAIN_TEXT
         document = {"content": text, "type_": type_}
         encoding_type = enums.EncodingType.UTF8

@@ -9,12 +9,14 @@ class SentimentAnalysisGlobalHelper:
         self._sentiment_analysis_global = SentimentAnalysisGlobal()
 
     def get_sentiment_client(self, df, index, input_column, output_column_sentiment, _output_column_magnitude, row):
+        #  get the sentiment for a single tweet
         input_cell = str(row[input_column])
         _result = self._sentiment_analysis_global.analyze_global_sentiment(text_content=input_cell)
         df.at[index, output_column_sentiment] = _result[0]
         df.at[index, _output_column_magnitude] = _result[1]
 
     def runner(self, df, input_column):
+        #  get the sentiment value for tweets one by one
         _output_column_sentiment = "sentiment"
         _output_column_magnitude = "sentiment magnitude"
 
